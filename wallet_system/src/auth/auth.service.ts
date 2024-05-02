@@ -1,10 +1,12 @@
-import { ForbiddenException, Injectable } from "@nestjs/common";
+import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { SignInDto, SignUpDto, createUserResponse } from "./dto";
 import * as argon from "argon2";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
+import { User } from "@prisma/client";
+
 
 @Injectable()
 export class AuthService {
@@ -100,5 +102,24 @@ export class AuthService {
 
         }
 
+    }
+
+    async logout(user: User, token: string) {
+        try {
+            if (!user) throw new NotFoundException('User not found, try to login again or try after some time');
+            await this.prisma.blacklistedToken.create({
+                data: {
+                    token: token
+                }
+            })
+
+            return 'Logged out successfully';
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw error; // Re-throw custom error for correct response
+            } else {
+                throw new Error("Logout failed: " + error.message);
+            }
+        }
     }
 }

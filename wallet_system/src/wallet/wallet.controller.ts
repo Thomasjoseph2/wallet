@@ -21,23 +21,24 @@ export class WalletController {
     }
 
     @Post('add-amount')
-    async addAmount(@Body() dto: WalletDto) {
+    async addAmount(@GetUser() user: User, @Body() dto: WalletDto) {
         // Validate the DTO to ensure data integrity
         const errors = await validate(dto);
         if (errors.length > 0) {
             throw new BadRequestException('Validation failed: ' + JSON.stringify(errors));
         }
-        return this.walletService.addAmount(dto);
+
+        return this.walletService.addAmount(dto,user.id);
     }
 
 
     @Post('withdraw-amount')
-    async withdrawAmount(@Body() dto: WalletDto) {
+    async withdrawAmount(@GetUser() user: User, @Body() dto: WalletDto) {
         // Validate the DTO to ensure data integrity
         const errors = await validate(dto);
         if (errors.length > 0) {
             throw new BadRequestException('Validation failed: ' + JSON.stringify(errors));
         }
-        return this.walletService.withdrawAmount(dto);
+        return this.walletService.withdrawAmount(dto,user.id);
     }
 }

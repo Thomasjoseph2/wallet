@@ -1,6 +1,10 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
+import { Body, Controller, Req, HttpCode, HttpStatus, Post, UseGuards } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { SignInDto, SignUpDto } from "./dto";
+import { GetUser } from "./decorator";
+import { User } from "@prisma/client";
+import { JwtGuard } from "./guard";
+import { Request } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -15,9 +19,12 @@ export class AuthController {
     signin(@Body() dto: SignInDto) {
         return this.authService.login(dto)
     }
-
- 
-    
-
-
+    @UseGuards(JwtGuard)
+    @Post('logout')
+    @UseGuards(JwtGuard)  // Assuming JwtGuard is being used to protect the route
+    async logout(@GetUser() user: User, @Req() req: Request) {  // Correctly type the 'req' parameter
+        const authHeader = req.headers.authorization;
+        const token = authHeader && authHeader.split(' ')[1]; // Bearer token
+        return this.authService.logout(user, token);
+    }
 }

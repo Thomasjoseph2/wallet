@@ -52,3 +52,11 @@ model Transaction {
 
   @@map("transactions")
 }
+
+model BlacklistedToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  createdAt DateTime @default(now())
+
+  @@map("blacklisted_tokens")
+}

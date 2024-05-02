@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { WalletDto } from './dto';
 
@@ -33,11 +33,11 @@ export class WalletService {
     }
 
 
-    async addAmount(dto: WalletDto): Promise<string> {
+    async addAmount(dto: WalletDto, userId: number): Promise<string> {
         return await this.prisma.$transaction(async (prisma) => {
             try {
                 const user = await prisma.user.findUnique({
-                    where: { id: parseInt(dto.userId) },
+                    where: { id: userId },
                     include: { wallet: true }
                 });
 
@@ -60,7 +60,7 @@ export class WalletService {
 
                 return `Wallet updated successfully. New balance: ${updatedWallet.balance}`;
             } catch (error) {
-                if (error instanceof NotFoundException) {
+                if (error instanceof NotFoundException || UnauthorizedException) {
                     throw error;
                 } else {
                     throw new Error("Adding amount failed: " + error.message);
@@ -70,11 +70,11 @@ export class WalletService {
     }
 
 
-    async withdrawAmount(dto: WalletDto): Promise<string> {
+    async withdrawAmount(dto: WalletDto, userId: number): Promise<string> {
         return await this.prisma.$transaction(async (prisma) => {
             try {
                 const userWithWallet = await prisma.user.findUnique({
-                    where: { id: parseInt(dto.userId) },
+                    where: { id: userId },
                     include: { wallet: true }
                 });
 
