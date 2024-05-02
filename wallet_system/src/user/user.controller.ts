@@ -1,15 +1,18 @@
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { Request } from 'express';
 import { JwtGuard } from '../auth/guard';
+import { GetUser } from 'src/auth/decorator';
+import { User } from '@prisma/client';
+
+
+@UseGuards(JwtGuard)
 @Controller('users')
+
 export class UserController {
 
-    @UseGuards(JwtGuard)
     @Get('profile')
-    getMe(@Req() req: Request) {
+    getMe(@GetUser() user: User) {
         try {
-            return req.user
+            return user
         } catch (error) {
             throw new Error("action failed: " + error.message);
 
