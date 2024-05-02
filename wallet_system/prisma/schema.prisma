@@ -14,28 +14,41 @@ datasource db {
 }
 
 model User {
-  id Int @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   email String @unique
-  hash String
+  hash  String
 
   firstName String
-  lastName String
-  wallet Wallet @relation(fields: [walletId], references: [id])
-  walletId Int @unique  
+  lastName  String
+  wallet    Wallet @relation(fields: [walletId], references: [id])
+  walletId  Int    @unique
 
   @@map("users")
 }
 
 model Wallet {
-  id Int @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  balance Float @default(0)
-  user User?
+  balance      Float         @default(0)
+  user         User?
+  transactions Transaction[] // This indicates that a Wallet can have many Transactions
 
   @@map("wallets")
+}
+
+model Transaction {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) // Timestamp when the transaction was created
+  updatedAt DateTime @updatedAt // Timestamp for the last update
+  type      String // Type of transaction e.g., 'deposit', 'withdrawal'
+  amount    Float // The monetary amount involved in the transaction
+  walletId  Int // Foreign key to reference the Wallet
+  wallet    Wallet   @relation(fields: [walletId], references: [id]) // Relation to the Wallet model
+
+  @@map("transactions")
 }
