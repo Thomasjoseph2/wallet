@@ -9,6 +9,7 @@ import { Request } from 'express';
 @Controller('auth')
 export class AuthController {
     constructor(private authService: AuthService) { }
+    
 
     @Post('signup')
     signup(@Body() dto: SignUpDto) {

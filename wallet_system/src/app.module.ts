@@ -4,6 +4,8 @@ import { UserModule } from './user/user.module';
 import { WalletModule } from './wallet/wallet.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
+import { WelcomeController } from './welcome/welcome.controller';
+import { WelcomeModule } from './welcome/welcome.module';
 
 @Module({
   imports: [
@@ -11,6 +13,7 @@ import { ConfigModule } from '@nestjs/config';
     AuthModule,
     UserModule,
     WalletModule, 
-    PrismaModule],
+    PrismaModule, 
+    WelcomeModule],
 })
 export class AppModule { }
